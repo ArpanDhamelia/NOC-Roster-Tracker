@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <style>
+        .child {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px;
+        }
+
+        .center-vert {
+            position: absolute;
+            top: 50%;
+            transform: translate(0, -50%);
+            padding: 10px;
+        }
+    </style>
+
+    <div class="container-fluid">
+        <div class="row" style="text-align: center; padding-top: 2%;">
+            <h1>NOC Roster Tracker</h1>
+        </div>
+        <hr>
+        <div class="row " style="text-align: center;">
+            <div class="row">
+                <div class="col-md-3 center-vert">
+                    <div class="list-group">
+                        <button id="-1" type="button" class="list-group-item" onclick="getRosterDates(id)">
+                            This Week</button>
+                        <button id="0" type="button" class="list-group-item" onclick="getRosterDates(id)">Abhimanyu,
+                            Callistus</button>
+                        <button id="1" type="button" class="list-group-item" onclick="getRosterDates(id)">Archit,
+                            Nantha</button>
+                        <button id="2" type="button" class="list-group-item" onclick="getRosterDates(id)">Arpan,
+                            Jitendra</button>
+                        <button id="3" type="button" class="list-group-item" onclick="getRosterDates(id)">Harsha,
+                            Jhanvi</button>
+                        <button id="4" type="button" class="list-group-item" onclick="getRosterDates(id)">Shivam,
+                            Tejas</button>
+                    </div>
+                </div>
+                <div class="col-md-9 parent">
+                    <div class="col-md-3 child">
+                        <div id="outlet">
+                            <div id="this" class="list-group"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script>
+            const rosters = [
+                {
+                    id: 1,
+                    player1: "Abhimanyu",
+                    player2: "Callistus",
+                },
+                {
+                    id: 2,
+                    player1: "Archit",
+                    player2: "Nantha",
+                },
+                {
+                    id: 3,
+                    player1: "Arpan",
+                    player2: "Jitendra",
+                },
+                {
+                    id: 4,
+                    player1: "Harsha",
+                    player2: "Jhanvi",
+                },
+                {
+                    id: 5,
+                    player1: "Shivam",
+                    player2: "Tejas",
+                },
+            ]
+            const refrence = "2023-11-20"
+            const THIS_WEEK_HTML = `<h4>This Week's Winnners !!!</h4><h4 id="roster" style=" border: 5px solid;"></h4><h4 id="current"></h4>`
+            const LIST_HTML = `<div id="list" class="list-group"></div>`
+            const allDates = loadAllDates();
+            var prev = "0";
+            var currentRoster = 0
+            function getWinners() {
+                const today = new Date();
+                const ref = new Date(refrence);
+                const diff = Math.ceil((today - ref) / (1000 * 60 * 60 * 24));
+                var rosterIndex = Math.floor(diff / 7) % rosters.length;
+                return rosters[rosterIndex]
+            }
+            function pretty() {
+                var thisWeeksRoster = getWinners();
+                currentRoster = thisWeeksRoster['id']
+                var roster = document.getElementById("roster");
+                roster.innerHTML = thisWeeksRoster['player1'] + " , " + thisWeeksRoster['player2'];
+            }
+            function getCurrentWeek(today) {
+                const firstDay = new Date(today.setDate(today.getDate() - (today.getDay() == 0 ? 7 : today.getDay()) + 6));
+                const lastDay = new Date(today.setDate(today.getDate() - today.getDay() + 7));
+                const currentWeek = firstDay.getDate() + "/" + (firstDay.getMonth() + 1) + " - " + lastDay.getDate() + "/" + (lastDay.getMonth() + 1)
+                return currentWeek;
+            }
+
+            function getRosterDates(id) {
+                //Handles Active list item
+                document.getElementById(prev).classList.remove("active");
+                document.getElementById(id).classList.add("active");
+                prev = id
+                if (id === "-1") {
+                    document.getElementById("this").innerHTML = THIS_WEEK_HTML
+                    pretty();
+                    var currentWeek = getCurrentWeek(new Date());
+                    document.getElementById("current").innerHTML = currentWeek;
+                    return;
+                }
+                var rosterDate = ""
+                for (var i = parseInt(id); i < 50; i += 5) {
+                    rosterDate += `<div class="list-group-item">` + allDates[i] + `</div>`
+
+                }
+                document.getElementById("this").innerHTML = rosterDate
+            }
+
+            function loadAllDates() {
+                var allDates = []
+                var ref = new Date(refrence);
+                for (var i = 0; i < 50; i++) {
+                    var newDate = new Date(ref.setDate(ref.getDate() - ref.getDay() + 1))
+                    var res = getCurrentWeek(newDate);
+                    ref = newDate;
+                    allDates.push(res)
+                }
+                return allDates;
+            }
+
+            getRosterDates("-1");
+
+        </script>
+</body>
+
+</html>
